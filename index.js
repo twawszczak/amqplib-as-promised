@@ -46,15 +46,15 @@ class AmqplibChannelWrapper {
         } else {
           const eventHandlers = {}
 
-          const eventHandlerWrapper = (eventName) => {
-            return eventHandlers[eventName] = () => {
-              [EVENT_DRAIN, EVENT_CLOSE, EVENT_ERROR].forEach(event => {
-                if (event !== eventName) {
-                  channel.removeListener(event, eventHandlers[eventName])
+          const eventHandlerWrapper = (specificEventName) => {
+            return eventHandlers[specificEventName] = () => {
+              [EVENT_DRAIN, EVENT_CLOSE, EVENT_ERROR].forEach(eventName => {
+                if (eventName !== specificEventName) {
+                  channel.removeListener(eventName, eventHandlers[eventName])
                 }
               })
 
-              eventName === EVENT_DRAIN ? resolve() : reject()
+              specificEventName === EVENT_DRAIN ? resolve() : reject()
             }
           }
 
