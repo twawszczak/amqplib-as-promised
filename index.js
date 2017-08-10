@@ -31,20 +31,16 @@ class AmqplibChannelWrapper {
     const sendToQueue = channel.sendToQueue.bind(channel)
     channel.sendToQueue = (queue, content, options) => {
       return new Promise((resolve, reject) => {
-        const canSend = sendToQueue(queue, content, options)
-        if (canSend) {
-          resolve()
-        } else {
-          try {
-            channel.once('drain', () => {
-              resolve()
-            })
-            channel.once('error', (error) => {
-              reject(error)
-            })
-          } catch (error) {
-            reject(error)
+        try {
+          const canSend = sendToQueue(queue, content, options)
+          if (canSend) {
+            resolve()
+          } else {
+            channel.once('drain', resolve)
+            channel.once('error', reject)
           }
+        } catch (error) {
+          reject(error)
         }
       })
     }

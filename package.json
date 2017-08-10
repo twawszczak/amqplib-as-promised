@@ -1,6 +1,6 @@
 {
   "name": "amqplib-as-promised",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Amqlib wrapper for support publishing new messages as promised",
   "main": "index.js",
   "scripts": {
