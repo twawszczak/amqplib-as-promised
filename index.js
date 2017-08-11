@@ -31,12 +31,12 @@ class AmqplibConnectionWrapper {
 
 class AmqplibChannelWrapper {
   static wrap (channel) {
-    const sendToQueue = channel.sendToQueue.bind(channel)
-    channel.sendToQueue = (queue, content, options) => {
+    const publish = channel.publish.bind(channel)
+    channel.publish = (exchange, queue, content, options) => {
       return new Promise((resolve, reject) => {
         let canSend = false
         try {
-          canSend = sendToQueue(queue, content, options)
+          canSend = publish(exchange, queue, content, options)
         } catch (error) {
           reject(error)
         }
@@ -47,15 +47,17 @@ class AmqplibChannelWrapper {
           const eventHandlers = {}
 
           const eventHandlerWrapper = (specificEventName) => {
-            return eventHandlers[specificEventName] = () => {
+            eventHandlers[specificEventName] = (handlerArg) => {
               [EVENT_DRAIN, EVENT_CLOSE, EVENT_ERROR].forEach(eventName => {
                 if (eventName !== specificEventName) {
                   channel.removeListener(eventName, eventHandlers[eventName])
                 }
               })
 
-              specificEventName === EVENT_DRAIN ? resolve() : reject()
+              specificEventName === EVENT_DRAIN ? resolve() : reject(String(handlerArg))
             }
+
+            return eventHandlers[specificEventName]
           }
 
           channel.once(EVENT_DRAIN, eventHandlerWrapper(EVENT_DRAIN))

@@ -3,9 +3,6 @@
   "version": "0.4.0",
   "description": "Amqlib wrapper for support publishing new messages as promised",
   "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/twawszczak/amqplib-as-promised.git"
@@ -18,5 +15,29 @@
   "homepage": "https://github.com/twawszczak/amqplib-as-promised#readme",
   "dependencies": {
     "amqplib": "^0.5.1"
+  },
+  "devDependencies": {
+    "chai": "^4.0.2",
+    "chai-as-promised": "^7.0.0",
+    "snazzy": "^7.0.0",
+    "standard": "^10.0.2",
+    "tap": "^10.5.1",
+    "tap-given": "^0.4.1",
+    "chance": "^1.0.10"
+  },
+  "scripts": {
+    "test": "standard --verbose | snazzy && tap test/*.js",
+    "test-coverage": "npm test -- --coverage"
+  },
+  "standard": {
+    "globals": [
+      "After",
+      "And",
+      "Feature",
+      "Given",
+      "Scenario",
+      "Then",
+      "When"
+    ]
   }
 }
