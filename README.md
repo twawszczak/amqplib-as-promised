@@ -37,6 +37,6 @@ the only difference is, that methods `publish` and `sendToQueue` returns promise
 
 ### License
 
-Copyright (c) 2016-2017 Piotr Roszatycki <piotr.roszatycki@gmail.com>
+Copyright (c) 2017 Tadeusz Wawszczak
 
 [MIT](https://opensource.org/licenses/MIT)
