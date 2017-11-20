@@ -1,8 +1,9 @@
 {
   "name": "amqplib-as-promised",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Amqlib wrapper for support publishing new messages as promised",
   "main": "index.js",
+  "types": "index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/twawszczak/amqplib-as-promised.git"
@@ -14,16 +15,17 @@
   },
   "homepage": "https://github.com/twawszczak/amqplib-as-promised#readme",
   "dependencies": {
-    "amqplib": "^0.5.1"
+    "amqplib": "^0.5.2"
   },
   "devDependencies": {
-    "chai": "^4.0.2",
+    "@types/amqplib": "^0.5.4",
+    "chai": "^4.1.2",
     "chai-as-promised": "^7.0.0",
+    "chance": "^1.0.12",
     "snazzy": "^7.0.0",
     "standard": "^10.0.2",
-    "tap": "^10.5.1",
-    "tap-given": "^0.4.1",
-    "chance": "^1.0.10"
+    "tap": "^10.7.3",
+    "tap-given": "^0.4.1"
   },
   "scripts": {
     "test": "standard --verbose | snazzy && tap test/*.js",
