@@ -25,6 +25,17 @@ class AmqplibConnectionWrapper {
       return createChannel()
         .then(channel => AmqplibChannelWrapper.wrap(channel))
     }
+
+    console.log('test')
+
+    connection.waitForClose = () => {
+      return new Promise((resolve) => {
+        connection.on('close', () => {
+          resolve()
+        })
+      })
+    }
+
     return connection
   }
 }
@@ -32,7 +43,7 @@ class AmqplibConnectionWrapper {
 class AmqplibChannelWrapper {
   static wrap (channel) {
     const publish = channel.publish.bind(channel)
-    channel.publish = (exchange, queue, content, options) => {
+    channel.publishWithConfirmation = (exchange, queue, content, options) => {
       return new Promise((resolve, reject) => {
         let canSend = false
         try {
@@ -66,6 +77,11 @@ class AmqplibChannelWrapper {
         }
       })
     }
+
+    channel.sendToQueueWithConfirmation = (queue, content, options) => {
+      return channel.publishWithConfirmation('', queue, content, options)
+    }
+
     return channel
   }
 }

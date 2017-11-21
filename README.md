@@ -20,7 +20,11 @@ npm install amqplib-as-promised
 const amqp = require('amqplib-as-promised')
 ```
 
-the only difference is, that methods `publish` and `sendToQueue` returns promise instead of boolean value, so you can check when you can send next message to queue like that:
+the only difference is, that channel contains two new methods: 
+- `publishWithConfirmation` 
+- `sendToQueueWithConfirmation` 
+
+Both return promise instead of boolean value, so you can check when you can send next message to queue like that:
 
 ```js
 
@@ -29,7 +33,7 @@ the only difference is, that methods `publish` and `sendToQueue` returns promise
   const channel = connection.createChannel()
   
   for (let i = i; i <= 100; i++) {
-    await channel.sendToQueue(queueName, nextMessage())  
+    await channel.sendToQueueWithConfirmation(queueName, nextMessage())  
   }
 })()
 ```

@@ -14,7 +14,7 @@ const chance = new Chance()
 const amqplib = require('./../index')
 
 Feature('Amqplib send to queue async ', () => {
-  let connection, channel, queueName, messageContent, consumerTag
+  let connection, channel, queueName, messageContent, consumerTag, closePromise
 
   async function prepareScenario () {
     Given('Set config', async () => {
@@ -34,6 +34,10 @@ Feature('Amqplib send to queue async ', () => {
     And('Create queue', async () => {
       await channel.assertQueue(queueName, {durable: true})
     })
+
+    And('Get close handler', () => {
+      closePromise = connection.waitForClose()
+    })
   }
 
   async function cleanUp () {
@@ -41,12 +45,16 @@ Feature('Amqplib send to queue async ', () => {
       await channel.deleteQueue(queueName)
     })
 
-    Then('Close channel', async () => {
+    And('Close channel', async () => {
       await channel.close()
     })
 
-    Then('Finally disconnect', async () => {
+    And('Finally disconnect', async () => {
       await connection.close()
+    })
+
+    And('Close promise is fulfilled', (done) => {
+      closePromise.should.be.fulfilled.and.notify(done)
     })
   }
 
@@ -56,7 +64,7 @@ Feature('Amqplib send to queue async ', () => {
 
     Then('Send message', async () => {
       for (let i = 1; i <= limit; i++) {
-        await channel.sendToQueue(queueName, Buffer.from(messageContent))
+        await channel.sendToQueueWithConfirmation(queueName, Buffer.from(messageContent))
       }
     })
 
