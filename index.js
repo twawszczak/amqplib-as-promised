@@ -26,8 +26,6 @@ class AmqplibConnectionWrapper {
         .then(channel => AmqplibChannelWrapper.wrap(channel))
     }
 
-    console.log('test')
-
     connection.waitForClose = () => {
       return new Promise((resolve) => {
         connection.on('close', () => {
