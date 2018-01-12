@@ -1,6 +1,6 @@
 {
   "name": "amqplib-as-promised",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "Amqlib wrapper for support publishing new messages as promised",
   "main": "index.js",
   "types": "index.d.ts",
@@ -15,10 +15,10 @@
   },
   "homepage": "https://github.com/twawszczak/amqplib-as-promised#readme",
   "dependencies": {
+    "@types/amqplib": "^0.5.4",
     "amqplib": "^0.5.2"
   },
   "devDependencies": {
-    "@types/amqplib": "^0.5.4",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.0.0",
     "chance": "^1.0.12",
