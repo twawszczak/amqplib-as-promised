@@ -51,7 +51,6 @@ Feature('basic usage', async () => {
         receivedMessage = message.content.toString()
         await channel.ack(message)
 
-        console.log('received')
         console.log(message.content.toString())
       }
     })).consumerTag
@@ -73,14 +72,9 @@ Feature('basic usage', async () => {
   })
 
   After(async () => {
-    console.log('afterek')
     await channel.cancel(consumerTag)
-    console.log('canceled')
     await channel.deleteQueue(queueName)
-    console.log('deketed')
     await channel.close()
-    console.log('closed')
     await connection.close()
-    console.log('po afterku')
   })
 })
