@@ -1,9 +1,7 @@
 {
   "name": "amqplib-as-promised",
-  "version": "2.1.1",
+  "version": "3.0.0",
   "description": "Amqlib wrapper for support publishing new messages as promised",
-  "main": "index.js",
-  "types": "index.d.ts",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/twawszczak/amqplib-as-promised.git"
@@ -16,19 +14,31 @@
   "homepage": "https://github.com/twawszczak/amqplib-as-promised#readme",
   "dependencies": {
     "@types/amqplib": "^0.5.4",
-    "amqplib": "^0.5.2"
+    "amqplib": "^0.5.2",
+    "typescript": "^2.7.2"
   },
   "devDependencies": {
+    "@types/chai": "^4.1.2",
+    "@types/chai-as-promised": "^7.1.0",
+    "@types/chai-string": "^1.4.0",
+    "@types/mocha": "^2.2.48",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.0.0",
+    "chai-string": "^1.4.0",
     "chance": "^1.0.12",
+    "mocha": "^5.0.1",
     "snazzy": "^7.0.0",
     "standard": "^10.0.2",
     "tap": "^10.7.3",
-    "tap-given": "^0.4.1"
+    "tap-given": "^0.4.1",
+    "ts-mocha": "^1.1.0",
+    "ts-node": "^5.0.1"
   },
   "scripts": {
-    "test": "standard --verbose | snazzy && tap test/*.js",
+    "ts-node": "ts-node",
+    "test": "yarn ts-mocha 'test/api/**/*.ts'",
+    "build": "tsc",
+    "tsc": "tsc",
     "test-coverage": "npm test -- --coverage"
   },
   "standard": {

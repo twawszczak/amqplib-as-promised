@@ -1,6 +1,11 @@
 ## amqplib-as-promised
 
-This module wrapping [amqplib node.js library](http://www.squaremobius.net/amqp.node/channel_api.html) to provide support for asynchronous message sending.
+This module wrapping [amqplib node.js library](http://www.squaremobius.net/amqp.node/channel_api.html)
+to provide classic `Promise` interface. (instead of original implementation using Bluebird promises)
+Also, AMQP protocol closing channel when any error occurs. (even in case of using `checkQueue` method,
+error is emitted and channel is closed, when queue does not exist) That library wrapper automatically
+reconnects channel and returning error as a Promise `reject` response.
+
 
 ### Requirements
 
@@ -14,33 +19,17 @@ npm install amqplib-as-promised
 
 ### Usage
 
-`amqplib-as-promised` can be used like standard `amqplib` module:
-
-```js
-const amqp = require('amqplib-as-promised')
+```
+const { Connection } =
 ```
 
-the only difference is, that channel contains two new methods: 
-- `publishWithConfirmation` 
-- `sendToQueueWithConfirmation` 
 
-Both return promise instead of boolean value, so you can check when you can send next message to queue like that:
-
-```js
-
-(async () => {
-  const connection = amqp.connect('amqp://localhost')
-  const channel = connection.createChannel()
-  
-  for (let i = i; i <= 100; i++) {
-    await channel.sendToQueueWithConfirmation(queueName, nextMessage())  
-  }
-})()
-```
-
+| test | aaaa |
+| ---  | ---  |
+| test | qwwa |
 
 ### License
 
-Copyright (c) 2017 Tadeusz Wawszczak
+Copyright (c) 2017-2018 Tadeusz Wawszczak
 
 [MIT](https://opensource.org/licenses/MIT)
