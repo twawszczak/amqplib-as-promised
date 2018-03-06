@@ -54,9 +54,48 @@ export class Channel {
   }
 
   async sendToQueue (queueName: string, content: Buffer, options?: amqplib.Options.Publish): Promise<boolean> {
-    return this.nativeOperation((channel) => {
-      return Promise.resolve(channel.sendToQueue(queueName, content, options))
-    })
+    return this.publish('', queueName, content, options)
+  }
+
+  async publish (exchange: string, queue: string, content: Buffer, options?: amqplib.Options.Publish): Promise<boolean> {
+    const EVENT_DRAIN = 'drain'
+    const EVENT_ERROR = 'error'
+    const EVENT_CLOSE = 'close'
+
+    return this.nativeOperation((channel => {
+      return new Promise((resolve, reject) => {
+        let canSend = false
+        try {
+          canSend = channel.publish(exchange, queue, content, options)
+        } catch (error) {
+          reject(error)
+        }
+
+        if (canSend) {
+          resolve(true)
+        } else {
+          const eventHandlers: {[key: string]: (...args: any[]) => void} = {}
+
+          const eventHandlerWrapper = (specificEventName: string) => {
+            eventHandlers[specificEventName] = (handlerArg) => {
+              [EVENT_DRAIN, EVENT_CLOSE, EVENT_ERROR].forEach(eventName => {
+                if (eventName !== specificEventName) {
+                  channel.removeListener(eventName, eventHandlers[eventName])
+                }
+              })
+
+              specificEventName === EVENT_DRAIN ? resolve(true) : reject(String(handlerArg))
+            }
+
+            return eventHandlers[specificEventName]
+          }
+
+          channel.once(EVENT_DRAIN, eventHandlerWrapper(EVENT_DRAIN))
+          channel.once(EVENT_ERROR, eventHandlerWrapper(EVENT_ERROR))
+          channel.once(EVENT_CLOSE, eventHandlerWrapper(EVENT_CLOSE))
+        }
+      })
+    }))
   }
 
   async prefetch (count: number, global: boolean): Promise<void> {

@@ -21,6 +21,7 @@
     "@types/chai": "^4.1.2",
     "@types/chai-as-promised": "^7.1.0",
     "@types/chai-string": "^1.4.0",
+    "@types/chance": "^1.0.0",
     "@types/mocha": "^2.2.48",
     "chai": "^4.1.2",
     "chai-as-promised": "^7.0.0",
@@ -36,7 +37,7 @@
   },
   "scripts": {
     "ts-node": "ts-node",
-    "test": "yarn ts-mocha 'test/api/**/*.ts'",
+    "test": "yarn ts-mocha 'test/api/**/*.ts' --timeout 10000",
     "build": "tsc",
     "tsc": "tsc",
     "test-coverage": "npm test -- --coverage"

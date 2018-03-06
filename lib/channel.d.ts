@@ -1,14 +1,7 @@
 /// <reference types="node" />
 import amqplib from 'amqplib';
 export declare type MessageHandler = (message: amqplib.Message | null) => any;
-export interface AmqpChannelInterface {
-    sendToQueue(queueName: string, content: Buffer, options: amqplib.Options.Publish): Promise<boolean>;
-    cancel(tag: string): Promise<amqplib.Replies.Empty>;
-    ack(message: amqplib.Message, allUpTo?: boolean): void;
-    nack(message: amqplib.Message, allUpTo?: boolean, requeue?: boolean): void;
-    consume(queueName: string, handler: MessageHandler, options?: amqplib.Options.Consume): Promise<amqplib.Replies.Consume>;
-}
-export declare class Channel implements AmqpChannelInterface {
+export declare class Channel {
     protected connection: amqplib.Connection;
     protected error: any;
     protected channel?: amqplib.Channel;
@@ -31,6 +24,7 @@ export declare class Channel implements AmqpChannelInterface {
     assertQueue(queueName: string, options?: amqplib.Options.AssertQueue): Promise<amqplib.Replies.AssertQueue>;
     deleteQueue(queueName: string, options?: amqplib.Options.DeleteQueue): Promise<amqplib.Replies.DeleteQueue>;
     sendToQueue(queueName: string, content: Buffer, options?: amqplib.Options.Publish): Promise<boolean>;
+    publish(exchange: string, queue: string, content: Buffer, options?: amqplib.Options.Publish): Promise<boolean>;
     prefetch(count: number, global: boolean): Promise<void>;
     ack(message: amqplib.Message, allUpTo?: boolean): void;
     nack(message: amqplib.Message, allUpTo?: boolean, requeue?: boolean): void;

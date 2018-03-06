@@ -50,15 +50,12 @@ Feature('basic usage', async () => {
       if (message) {
         receivedMessage = message.content.toString()
         await channel.ack(message)
-
-        console.log(message.content.toString())
       }
     })).consumerTag
   })
 
   And ('send message', async () => {
-    console.log(queueName)
-    console.log(await channel.sendToQueue(queueName, Buffer.from(testMessage)))
+    await channel.sendToQueue(queueName, Buffer.from(testMessage))
   })
 
   And('Wait 1 sec', async () => {
