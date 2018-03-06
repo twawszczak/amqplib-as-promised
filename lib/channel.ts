@@ -126,7 +126,7 @@ export class Channel {
     })
   }
 
-  async get (queueName: string, options?: amqplib.Options.Get): Promise<Message> {
+  async get (queueName: string, options?: amqplib.Options.Get): Promise<Message | false> {
     return this.nativeOperation((channel) => {
       return Promise.resolve(channel.get(queueName, options))
     })
