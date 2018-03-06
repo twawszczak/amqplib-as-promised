@@ -19,14 +19,18 @@ npm install amqplib-as-promised
 
 ### Usage
 
-```
-const { Connection } =
-```
+(with `async` `await` syntax)
 
-
-| test | aaaa |
-| ---  | ---  |
-| test | qwwa |
+```js
+const { Connection } = require('amqplib-as-promised')
+const connection = new Connection(AMQP_URL)
+await connection.init()
+const channel = await connection.createChannel()
+await channel.assertQueue(queueName)
+await channel.sendToQueue(queueName, Buffer.from(testMessage))
+await channel.close()
+await connection.close()
+```
 
 ### License
 
