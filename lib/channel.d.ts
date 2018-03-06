@@ -1,5 +1,5 @@
 /// <reference types="node" />
-import amqplib from 'amqplib';
+import amqplib, { Message } from 'amqplib';
 export declare type MessageHandler = (message: amqplib.Message | null) => any;
 export declare class Channel {
     protected connection: amqplib.Connection;
@@ -29,6 +29,7 @@ export declare class Channel {
     ack(message: amqplib.Message, allUpTo?: boolean): void;
     nack(message: amqplib.Message, allUpTo?: boolean, requeue?: boolean): void;
     close(): Promise<void>;
+    get(queueName: string, options?: amqplib.Options.Get): Promise<Message>;
     protected nativeOperation(operation: (channel: amqplib.Channel) => Promise<any>): Promise<any>;
     protected reconnect(): Promise<void>;
     protected bindConsumersAfterReconnect(): Promise<void>;

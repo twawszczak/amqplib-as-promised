@@ -1,4 +1,4 @@
-import amqplib from 'amqplib'
+import amqplib, { Message } from 'amqplib'
 
 export type MessageHandler = (message: amqplib.Message | null) => any
 
@@ -123,6 +123,12 @@ export class Channel {
   async close (): Promise<void> {
     return this.nativeOperation((channel) => {
       return Promise.resolve(channel.close())
+    })
+  }
+
+  async get (queueName: string, options?: amqplib.Options.Get): Promise<Message> {
+    return this.nativeOperation((channel) => {
+      return Promise.resolve(channel.get(queueName, options))
     })
   }
 
