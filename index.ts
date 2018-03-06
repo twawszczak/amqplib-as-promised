@@ -1,2 +1,10 @@
-export { Connection } from './lib/connection'
-export { Channel } from './lib/channel'
+import { Connection } from './lib/connection'
+import { Channel } from './lib/channel'
+
+
+export {
+  Connection,
+  Channel
+}
+
+export * from 'amqplib'
