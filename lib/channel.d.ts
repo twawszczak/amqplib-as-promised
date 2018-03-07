@@ -1,10 +1,10 @@
 /// <reference types="node" />
-import amqplib, { Message } from 'amqplib';
-export declare type MessageHandler = (message: amqplib.Message | null) => any;
+import { Channel as NativeChannel, Connection, Message, Options, Replies } from 'amqplib';
+export declare type MessageHandler = (message: Message | null) => any;
 export declare class Channel {
-    protected connection: amqplib.Connection;
+    protected connection: Connection;
     protected error: any;
-    protected channel?: amqplib.Channel;
+    protected channel?: NativeChannel;
     protected processing: boolean;
     protected suspended: Array<{
         resolve: () => void;
@@ -14,25 +14,31 @@ export declare class Channel {
         [tag: string]: {
             queue: string;
             handler: MessageHandler;
-            options?: amqplib.Options.Consume;
+            options?: Options.Consume;
         };
     };
-    constructor(channel: amqplib.Channel, connection: amqplib.Connection);
-    consume(queueName: string, handler: MessageHandler, options?: amqplib.Options.Consume): Promise<amqplib.Replies.Consume>;
-    cancel(consumerTag: string): Promise<amqplib.Replies.Empty>;
-    checkQueue(queueName: string): Promise<amqplib.Replies.AssertQueue>;
-    assertQueue(queueName: string, options?: amqplib.Options.AssertQueue): Promise<amqplib.Replies.AssertQueue>;
-    deleteQueue(queueName: string, options?: amqplib.Options.DeleteQueue): Promise<amqplib.Replies.DeleteQueue>;
-    sendToQueue(queueName: string, content: Buffer, options?: amqplib.Options.Publish): Promise<boolean>;
-    publish(exchange: string, queue: string, content: Buffer, options?: amqplib.Options.Publish): Promise<boolean>;
-    prefetch(count: number, global: boolean): Promise<void>;
-    ack(message: amqplib.Message, allUpTo?: boolean): void;
-    nack(message: amqplib.Message, allUpTo?: boolean, requeue?: boolean): void;
+    constructor(channel: NativeChannel, connection: Connection);
+    consume(queueName: string, handler: MessageHandler, options?: Options.Consume): Promise<Replies.Consume>;
+    cancel(consumerTag: string): Promise<Replies.Empty>;
+    checkQueue(queueName: string): Promise<Replies.AssertQueue>;
+    assertQueue(queueName: string, options?: Options.AssertQueue): Promise<Replies.AssertQueue>;
+    deleteQueue(queueName: string, options?: Options.DeleteQueue): Promise<Replies.DeleteQueue>;
+    sendToQueue(queueName: string, content: Buffer, options?: Options.Publish): Promise<boolean>;
+    bindQueue(queueName: string, source: string, args?: any): Promise<Replies.Empty>;
+    publish(exchange: string, queue: string, content: Buffer, options?: Options.Publish): Promise<boolean>;
+    prefetch(count: number, global: boolean): Promise<Replies.Empty>;
+    assertExchange(exchangeName: string, exchangeType: string, options?: Options.AssertExchange): Promise<Replies.AssertExchange>;
+    checkExchange(exchangeName: string): Promise<Replies.Empty>;
+    deleteExchange(exchangeName: string, options?: Options.DeleteExchange): Promise<Replies.Empty>;
+    bindExchange(destination: string, source: string, pattern: string, args?: any): Promise<Replies.Empty>;
+    unbindExchange(destination: string, source: string, pattern: string, args?: any): Promise<Replies.Empty>;
+    ack(message: Message, allUpTo?: boolean): void;
+    nack(message: Message, allUpTo?: boolean, requeue?: boolean): void;
     close(): Promise<void>;
-    get(queueName: string, options?: amqplib.Options.Get): Promise<Message | false>;
-    protected nativeOperation(operation: (channel: amqplib.Channel) => Promise<any>): Promise<any>;
+    get(queueName: string, options?: Options.Get): Promise<Message | boolean>;
+    protected nativeOperation<T>(operation: (channel: NativeChannel) => Promise<T>): Promise<T>;
     protected reconnect(): Promise<void>;
     protected bindConsumersAfterReconnect(): Promise<void>;
     protected processUnprocessed(): void;
-    protected bindNativeChannel(channel: amqplib.Channel): void;
+    protected bindNativeChannel(channel: NativeChannel): void;
 }
