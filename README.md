@@ -66,6 +66,11 @@ await connection.close()
 | assertQueue | **queueName**: string **options**?: amqplib.Options.AssertQueue | Promise\<amqplib.Replies.AssertQueue\> |  |
 | deleteQueue | **queueName**: string **options**?: amqplib.Options.DeleteQueue | Promise\<amqplib.Replies.DeleteQueue\> |  |
 | sendToQueue | **queueName**: string **content**: Buffer **options**?: amqplib.Options.Publish | Promise\<boolean\> |  |
+| assertExchange | **exchangeName**: string **exchangeType**: string **options**?: amqplib.Options.AssertExchange | Promise\<amqplib.Replies.AssertExchange\> |  |
+| checkExchange | **exchangeName**: string | Promise\<amqplib.Replies.Empty> |  |
+| deleteExchange | **exchangeName**: string **options**: amqplib.Options.DeleteExchange | Promise\<amqplib.Replies.Empty> |  |
+| bindExchange | **destination**: string **source**: string **pattern**: string **args**?: any | Promise\<amqplib.Replies.Empty> |  |
+| unbindExchange | **destination**: string **source**: string **pattern**: string **args**?: any | Promise\<amqplib.Replies.Empty> |  |
 | publish | **exchange**: string **queue**: string **content**: Buffer **options**?: amqplib.Options.Publish | Promise\<boolean\> |  |
 | prefetch | **count**: number **global**: boolean | Promise\<void\> |  |
 | consume | **queueName**: string **handler**: (message: amqplib.Message \| null) =\> any **options**?: amqplib.Options.Consume | Promise\<amqplib.Replies.Consume\> |  |

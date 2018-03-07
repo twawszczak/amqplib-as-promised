@@ -62,7 +62,7 @@ export class Channel {
     const EVENT_ERROR = 'error'
     const EVENT_CLOSE = 'close'
 
-    return this.nativeOperation((channel => {
+    return this.nativeOperation<boolean>((channel) => {
       return new Promise((resolve, reject) => {
         let canSend = false
         try {
@@ -78,7 +78,7 @@ export class Channel {
 
           const eventHandlerWrapper = (specificEventName: string) => {
             eventHandlers[specificEventName] = (handlerArg) => {
-              [EVENT_DRAIN, EVENT_CLOSE, EVENT_ERROR].forEach(eventName => {
+              [EVENT_DRAIN, EVENT_CLOSE, EVENT_ERROR].forEach((eventName) => {
                 if (eventName !== specificEventName) {
                   channel.removeListener(eventName, eventHandlers[eventName])
                 }
@@ -95,12 +95,42 @@ export class Channel {
           channel.once(EVENT_CLOSE, eventHandlerWrapper(EVENT_CLOSE))
         }
       })
-    }))
+    })
   }
 
-  async prefetch (count: number, global: boolean): Promise<void> {
-    return this.nativeOperation((channel) => {
+  async prefetch (count: number, global: boolean): Promise<amqplib.Replies.Empty> {
+    return this.nativeOperation<amqplib.Replies.Empty>((channel) => {
       return Promise.resolve(channel.prefetch(count, global))
+    })
+  }
+
+  async assertExchange (exchangeName: string, exchangeType: string, options?: amqplib.Options.AssertExchange): Promise<amqplib.Replies.AssertExchange> {
+    return this.nativeOperation<amqplib.Replies.AssertExchange>((channel) => {
+      return Promise.resolve(channel.assertExchange(exchangeName, exchangeType, options))
+    })
+  }
+
+  async checkExchange (exchangeName: string): Promise<amqplib.Replies.Empty> {
+    return this.nativeOperation<amqplib.Replies.Empty>((channel) => {
+      return Promise.resolve(channel.checkExchange(exchangeName))
+    })
+  }
+
+  async deleteExchange (exchangeName: string, options: amqplib.Options.DeleteExchange): Promise<amqplib.Replies.Empty> {
+    return this.nativeOperation<amqplib.Replies.Empty>((channel) => {
+      return Promise.resolve(channel.deleteExchange(exchangeName, options))
+    })
+  }
+
+  async bindExchange (destination: string, source: string, pattern: string, args?: any): Promise<amqplib.Replies.Empty> {
+    return this.nativeOperation<amqplib.Replies.Empty>((channel) => {
+      return Promise.resolve(channel.bindExchange(destination, source, pattern, args))
+    })
+  }
+
+  async unbindExchange (destination: string, source: string, pattern: string, args?: any): Promise<amqplib.Replies.Empty> {
+    return this.nativeOperation<amqplib.Replies.Empty>((channel) => {
+      return Promise.resolve(channel.unbindExchange(destination, source, pattern, args))
     })
   }
 
@@ -126,13 +156,13 @@ export class Channel {
     })
   }
 
-  async get (queueName: string, options?: amqplib.Options.Get): Promise<Message | false> {
-    return this.nativeOperation((channel) => {
+  async get (queueName: string, options?: amqplib.Options.Get): Promise<Message | boolean> {
+    return this.nativeOperation<Message | boolean>((channel) => {
       return Promise.resolve(channel.get(queueName, options))
     })
   }
 
-  protected async nativeOperation (operation: (channel: amqplib.Channel) => Promise<any>): Promise<any> {
+  protected async nativeOperation<T> (operation: (channel: amqplib.Channel) => Promise<T>): Promise<T> {
     if (this.processing) {
       await new Promise((resolve, reject) => {
         this.suspended.push({
@@ -158,7 +188,7 @@ export class Channel {
       }
       this.processUnprocessed()
       this.processing = false
-    })
+    }) as Promise<T>
   }
 
   protected async reconnect (): Promise<void> {
