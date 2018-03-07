@@ -1,8 +1,10 @@
 import { And, Feature, Given, Scenario, Then } from '../init'
 
 import Chance from 'chance'
-import { Connection } from '../../lib/connection'
+
 import { Channel } from '../../lib/channel'
+import { Connection } from '../../lib/connection'
+
 const chance = new Chance()
 
 const AMQP_URL = process.env.AMQP_URL || 'amqp://localhost'
@@ -32,7 +34,7 @@ Feature('Amqplib send to queue async ', () => {
     })
 
     And('Create queue', async () => {
-      await channel.assertQueue(queueName, {durable: true})
+      await channel.assertQueue(queueName, { durable: true })
     })
 
     And('Get close handler', () => {
