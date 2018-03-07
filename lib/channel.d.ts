@@ -19,7 +19,7 @@ export declare class Channel {
     };
     constructor(channel: amqplib.Channel, connection: amqplib.Connection);
     consume(queueName: string, handler: MessageHandler, options?: amqplib.Options.Consume): Promise<amqplib.Replies.Consume>;
-    cancel(tag: string): Promise<amqplib.Replies.Empty>;
+    cancel(consumerTag: string): Promise<amqplib.Replies.Empty>;
     checkQueue(queueName: string): Promise<amqplib.Replies.AssertQueue>;
     assertQueue(queueName: string, options?: amqplib.Options.AssertQueue): Promise<amqplib.Replies.AssertQueue>;
     deleteQueue(queueName: string, options?: amqplib.Options.DeleteQueue): Promise<amqplib.Replies.DeleteQueue>;
@@ -29,7 +29,7 @@ export declare class Channel {
     ack(message: amqplib.Message, allUpTo?: boolean): void;
     nack(message: amqplib.Message, allUpTo?: boolean, requeue?: boolean): void;
     close(): Promise<void>;
-    get(queueName: string, options?: amqplib.Options.Get): Promise<Message>;
+    get(queueName: string, options?: amqplib.Options.Get): Promise<Message | false>;
     protected nativeOperation(operation: (channel: amqplib.Channel) => Promise<any>): Promise<any>;
     protected reconnect(): Promise<void>;
     protected bindConsumersAfterReconnect(): Promise<void>;

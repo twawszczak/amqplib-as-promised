@@ -26,10 +26,10 @@ export class Channel {
     })
   }
 
-  async cancel (tag: string): Promise<amqplib.Replies.Empty> {
+  async cancel (consumerTag: string): Promise<amqplib.Replies.Empty> {
     return this.nativeOperation(async (channel) => {
-      const result = await channel.cancel(tag)
-      delete this.consumerHandlers[tag]
+      const result = await channel.cancel(consumerTag)
+      delete this.consumerHandlers[consumerTag]
 
       return result
     })
