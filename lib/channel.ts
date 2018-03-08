@@ -162,9 +162,9 @@ export class Channel {
     })
   }
 
-  async get (queueName: string, options?: Options.Get): Promise<Message | boolean> {
+  async get (queueName: string, options?: Options.Get): Promise<Message | false> {
     return this.nativeOperation((channel) => {
-      return Promise.resolve(channel.get(queueName, options))
+      return Promise.resolve(channel.get(queueName, options)) as Promise<Message | false>
     })
   }
 

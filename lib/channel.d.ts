@@ -35,7 +35,7 @@ export declare class Channel {
     ack(message: Message, allUpTo?: boolean): void;
     nack(message: Message, allUpTo?: boolean, requeue?: boolean): void;
     close(): Promise<void>;
-    get(queueName: string, options?: Options.Get): Promise<Message | boolean>;
+    get(queueName: string, options?: Options.Get): Promise<Message | false>;
     protected nativeOperation<T>(operation: (channel: NativeChannel) => Promise<T>): Promise<T>;
     protected reconnect(): Promise<void>;
     protected bindConsumersAfterReconnect(): Promise<void>;
