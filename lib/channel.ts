@@ -69,7 +69,7 @@ export class Channel {
     const EVENT_CLOSE = 'close'
 
     return this.nativeOperation((channel) => {
-      return new Promise((resolve, reject) => {
+      return new Promise<boolean>((resolve, reject) => {
         let canSend = false
         try {
           canSend = channel.publish(exchange, queue, content, options)
@@ -100,7 +100,7 @@ export class Channel {
           channel.once(EVENT_ERROR, eventHandlerWrapper(EVENT_ERROR))
           channel.once(EVENT_CLOSE, eventHandlerWrapper(EVENT_CLOSE))
         }
-      }) as Promise<boolean>
+      })
     })
   }
 
@@ -180,7 +180,7 @@ export class Channel {
 
     this.processing = true
 
-    return new Promise(async (resolve, reject) => {
+    return new Promise<T>(async (resolve, reject) => {
       try {
         if (!this.channel) {
           reject(new Error())
@@ -194,7 +194,7 @@ export class Channel {
       }
       this.processUnprocessed()
       this.processing = false
-    }) as Promise<T>
+    })
   }
 
   protected async reconnect (): Promise<void> {

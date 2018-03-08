@@ -1,0 +1,4 @@
+*
+!/index.*
+!/tsconfig.json
+!/lib/*

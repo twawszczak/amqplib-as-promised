@@ -1,6 +1,5 @@
-import { Connection } from './lib/connection'
 import { Channel } from './lib/channel'
-
+import { Connection } from './lib/connection'
 
 export {
   Connection,
