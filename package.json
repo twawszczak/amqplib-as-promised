@@ -15,8 +15,7 @@
   },
   "homepage": "https://github.com/twawszczak/amqplib-as-promised#readme",
   "dependencies": {
-    "amqplib": "^0.5.2",
-    "tslib": "^1.9.0"
+    "amqplib": "^0.5.2"
   },
   "devDependencies": {
     "@types/amqplib": "^0.5.4",
