@@ -8,6 +8,7 @@
     "noUnusedParameters": true,
     "esModuleInterop": true,
     "declaration": true,
+    "importHelpers": true,
     "typeRoots": [
       "node_modules/@types"
     ]
