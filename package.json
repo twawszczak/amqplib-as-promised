@@ -17,6 +17,9 @@
   "dependencies": {
     "amqplib": "^0.5.2"
   },
+  "peerDependencies": {
+    "@types/amqplib": ">= 0.5.4 < 1"
+  },
   "devDependencies": {
     "@types/amqplib": "^0.5.4",
     "@types/chai": "^4.1.2",
