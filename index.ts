@@ -6,4 +6,4 @@ export {
   Channel
 }
 
-export { Replies, Options, Message, ConfirmChannel, credentials, connect } from 'amqplib'
+export { Replies, Options, Message, ConfirmChannel, credentials, connect, MessageProperties, MessagePropertyHeaders } from 'amqplib'
