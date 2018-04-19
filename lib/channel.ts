@@ -57,9 +57,9 @@ export class Channel {
     return this.publish('', queueName, content, options)
   }
 
-  async bindQueue (queueName: string, source: string, args?: any): Promise<Replies.Empty> {
+  async bindQueue (queueName: string, source: string, pattern: string, args?: any): Promise<Replies.Empty> {
     return this.nativeOperation((channel) => {
-      return Promise.resolve(channel.bindQueue(queueName, source, args))
+      return Promise.resolve(channel.bindQueue(queueName, source, pattern, args))
     })
   }
 
