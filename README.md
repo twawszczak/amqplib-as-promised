@@ -66,7 +66,8 @@ For proper typing with TypeScript, *@types/amqplib* in `denDependencies` is need
 | assertQueue | **queueName**: string **options**?: amqplib.Options.AssertQueue | Promise\<amqplib.Replies.AssertQueue> |  |
 | deleteQueue | **queueName**: string **options**?: amqplib.Options.DeleteQueue | Promise\<amqplib.Replies.DeleteQueue> |  |
 | sendToQueue | **queueName**: string **content**: Buffer **options**?: amqplib.Options.Publish | Promise\<boolean> |  |
-| bindQueue | queueName: string, source: string, args?: any | Promise\<amqplib.Replies.Empty> |  |
+| bindQueue | **queueName**: string, **source**: string, **pattern**: string, **args**?: any | Promise\<amqplib.Replies.Empty> |  |
+| unbindQueue | **queueName**: string, **source**: string, **pattern**: string, **args**?: any | Promise\<amqplib.Replies.Empty> |  |
 | assertExchange | **exchangeName**: string **exchangeType**: string **options**?: amqplib.Options.AssertExchange | Promise\<amqplib.Replies.AssertExchange> |  |
 | checkExchange | **exchangeName**: string | Promise\<amqplib.Replies.Empty> |  |
 | deleteExchange | **exchangeName**: string **options**: amqplib.Options.DeleteExchange | Promise\<amqplib.Replies.Empty> |  |

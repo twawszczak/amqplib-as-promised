@@ -25,6 +25,7 @@ export declare class Channel {
     deleteQueue(queueName: string, options?: Options.DeleteQueue): Promise<Replies.DeleteQueue>;
     sendToQueue(queueName: string, content: Buffer, options?: Options.Publish): Promise<boolean>;
     bindQueue(queueName: string, source: string, pattern: string, args?: any): Promise<Replies.Empty>;
+    unbindQueue(queueName: string, source: string, pattern: string, args?: any): Promise<Replies.Empty>;
     publish(exchange: string, queue: string, content: Buffer, options?: Options.Publish): Promise<boolean>;
     prefetch(count: number, global: boolean): Promise<Replies.Empty>;
     assertExchange(exchangeName: string, exchangeType: string, options?: Options.AssertExchange): Promise<Replies.AssertExchange>;

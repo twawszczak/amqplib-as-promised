@@ -63,6 +63,12 @@ export class Channel {
     })
   }
 
+  async unbindQueue (queueName: string, source: string, pattern: string, args?: any): Promise<Replies.Empty> {
+    return this.nativeOperation((channel) => {
+      return Promise.resolve(channel.unbindQueue(queueName, source, pattern, args))
+    })
+  }
+
   async publish (exchange: string, queue: string, content: Buffer, options?: Options.Publish): Promise<boolean> {
     const EVENT_DRAIN = 'drain'
     const EVENT_ERROR = 'error'
