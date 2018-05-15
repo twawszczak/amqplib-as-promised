@@ -17,6 +17,7 @@ export declare class Channel {
             options?: Options.Consume;
         };
     };
+    private prefetchCache?;
     constructor(channel: NativeChannel, connection: Connection);
     consume(queueName: string, handler: MessageHandler, options?: Options.Consume): Promise<Replies.Consume>;
     cancel(consumerTag: string): Promise<Replies.Empty>;
@@ -27,7 +28,7 @@ export declare class Channel {
     bindQueue(queueName: string, source: string, pattern: string, args?: any): Promise<Replies.Empty>;
     unbindQueue(queueName: string, source: string, pattern: string, args?: any): Promise<Replies.Empty>;
     publish(exchange: string, queue: string, content: Buffer, options?: Options.Publish): Promise<boolean>;
-    prefetch(count: number, global: boolean): Promise<Replies.Empty>;
+    prefetch(count: number, global?: boolean): Promise<Replies.Empty>;
     assertExchange(exchangeName: string, exchangeType: string, options?: Options.AssertExchange): Promise<Replies.AssertExchange>;
     checkExchange(exchangeName: string): Promise<Replies.Empty>;
     deleteExchange(exchangeName: string, options?: Options.DeleteExchange): Promise<Replies.Empty>;
@@ -42,4 +43,5 @@ export declare class Channel {
     protected bindConsumersAfterReconnect(): Promise<void>;
     protected processUnprocessed(): void;
     protected bindNativeChannel(channel: NativeChannel): void;
+    protected checkPrefetchCache(): Promise<void>;
 }

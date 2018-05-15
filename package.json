@@ -1,6 +1,6 @@
 {
   "name": "amqplib-as-promised",
-  "version": "3.7.2",
+  "version": "3.8.0",
   "description": "Amqlib wrapper for support publishing new messages as promised",
   "repository": {
     "type": "git",
@@ -42,7 +42,7 @@
     "build": "tsc",
     "prepublishOnly": "tsc",
     "pretest": "tsc --noEmit --pretty && tslint -t stylish -p .",
-    "test": "ts-mocha test/api/**/*.ts --timeout 10000",
+    "test": "ts-mocha test/api/**/*.ts --timeout 30000",
     "tsc": "tsc",
     "ts-mocha": "ts-mocha",
     "ts-node": "ts-node"

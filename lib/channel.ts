@@ -8,6 +8,7 @@ export class Channel {
   protected processing: boolean = false
   protected suspended: Array<{ resolve: () => void, reject: (error: any) => void }> = []
   protected consumerHandlers: { [tag: string]: { queue: string, handler: MessageHandler, options?: Options.Consume } } = {}
+  private prefetchCache?: { count: number, global?: boolean }
 
   constructor (channel: NativeChannel, protected connection: Connection) {
     this.bindNativeChannel(channel)
@@ -86,7 +87,7 @@ export class Channel {
         if (canSend) {
           resolve(true)
         } else {
-          const eventHandlers: {[key: string]: (...args: any[]) => void} = {}
+          const eventHandlers: { [key: string]: (...args: any[]) => void } = {}
 
           const eventHandlerWrapper = (specificEventName: string) => {
             eventHandlers[specificEventName] = (handlerArg) => {
@@ -110,7 +111,8 @@ export class Channel {
     })
   }
 
-  async prefetch (count: number, global: boolean): Promise<Replies.Empty> {
+  async prefetch (count: number, global?: boolean): Promise<Replies.Empty> {
+    this.prefetchCache = { count, global }
     return this.nativeOperation((channel) => {
       return Promise.resolve(channel.prefetch(count, global))
     })
@@ -206,6 +208,8 @@ export class Channel {
   protected async reconnect (): Promise<void> {
     const nativeChannel = await this.connection.createChannel()
     this.bindNativeChannel(nativeChannel)
+    await this.checkPrefetchCache()
+
     await this.bindConsumersAfterReconnect()
   }
 
@@ -239,5 +243,11 @@ export class Channel {
     })
 
     this.channel = channel
+  }
+
+  protected async checkPrefetchCache (): Promise<void> {
+    if (this.channel && this.prefetchCache) {
+      await this.channel.prefetch(this.prefetchCache.count, this.prefetchCache.global)
+    }
   }
 }
