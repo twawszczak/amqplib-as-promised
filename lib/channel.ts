@@ -261,7 +261,9 @@ export class Channel extends EventEmitter {
           this.reconnectPromise = this.reconnect(this.error)
           await this.reconnectPromise
         }
-      } catch (e) {/**/}
+      } catch (e) {
+        this.emit('error', new Error('Cannot reconnect amqp channel with message: ' + e.message))
+      }
     })
 
     this.channel = channel
