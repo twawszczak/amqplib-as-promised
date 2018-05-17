@@ -1,16 +1,20 @@
 import { Channel as NativeChannel, Connection, Message, Options, Replies } from 'amqplib'
+import { EventEmitter } from 'events'
 
 export type MessageHandler = (message: Message | null) => any
 
-export class Channel {
+export class Channel extends EventEmitter {
   protected error: any
   protected channel?: NativeChannel
   protected processing: boolean = false
   protected suspended: Array<{ resolve: () => void, reject: (error: any) => void }> = []
   protected consumerHandlers: { [tag: string]: { queue: string, handler: MessageHandler, options?: Options.Consume } } = {}
   private prefetchCache?: { count: number, global?: boolean }
+  private reconnectPromise?: Promise<void>
+  private closingByClient: boolean = false
 
   constructor (channel: NativeChannel, protected connection: Connection) {
+    super()
     this.bindNativeChannel(channel)
   }
 
@@ -165,8 +169,13 @@ export class Channel {
   }
 
   async close (): Promise<void> {
-    return this.nativeOperation((channel) => {
-      return Promise.resolve(channel.close())
+    return this.nativeOperation(async (channel) => {
+      this.closingByClient = true
+      try {
+        await Promise.resolve(channel.close())
+      } catch (e) {
+        this.closingByClient = false
+      }
     })
   }
 
@@ -177,6 +186,10 @@ export class Channel {
   }
 
   protected async nativeOperation<T> (operation: (channel: NativeChannel) => Promise<T>): Promise<T> {
+    if (this.reconnectPromise) {
+      await this.reconnectPromise
+    }
+
     if (this.processing) {
       await new Promise((resolve, reject) => {
         this.suspended.push({
@@ -197,7 +210,6 @@ export class Channel {
           resolve(result)
         }
       } catch (error) {
-        await this.reconnect()
         reject(this.error)
       }
       this.processUnprocessed()
@@ -205,7 +217,8 @@ export class Channel {
     })
   }
 
-  protected async reconnect (): Promise<void> {
+  protected async reconnect (reason?: any): Promise<void> {
+    this.emit('reconnect', reason)
     const nativeChannel = await this.connection.createChannel()
     this.bindNativeChannel(nativeChannel)
     await this.checkPrefetchCache()
@@ -240,6 +253,15 @@ export class Channel {
   protected bindNativeChannel (channel: NativeChannel): void {
     channel.once('error', (error) => {
       this.error = error
+    })
+
+    channel.once('close', async () => {
+      try {
+        if (!this.closingByClient) {
+          this.reconnectPromise = this.reconnect(this.error)
+          await this.reconnectPromise
+        }
+      } catch (e) {/**/}
     })
 
     this.channel = channel

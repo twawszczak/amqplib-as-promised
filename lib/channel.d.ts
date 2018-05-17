@@ -1,7 +1,8 @@
 /// <reference types="node" />
 import { Channel as NativeChannel, Connection, Message, Options, Replies } from 'amqplib';
+import { EventEmitter } from 'events';
 export declare type MessageHandler = (message: Message | null) => any;
-export declare class Channel {
+export declare class Channel extends EventEmitter {
     protected connection: Connection;
     protected error: any;
     protected channel?: NativeChannel;
@@ -18,6 +19,8 @@ export declare class Channel {
         };
     };
     private prefetchCache?;
+    private reconnectPromise?;
+    private closingByClient;
     constructor(channel: NativeChannel, connection: Connection);
     consume(queueName: string, handler: MessageHandler, options?: Options.Consume): Promise<Replies.Consume>;
     cancel(consumerTag: string): Promise<Replies.Empty>;
@@ -39,7 +42,7 @@ export declare class Channel {
     close(): Promise<void>;
     get(queueName: string, options?: Options.Get): Promise<Message | false>;
     protected nativeOperation<T>(operation: (channel: NativeChannel) => Promise<T>): Promise<T>;
-    protected reconnect(): Promise<void>;
+    protected reconnect(reason?: any): Promise<void>;
     protected bindConsumersAfterReconnect(): Promise<void>;
     protected processUnprocessed(): void;
     protected bindNativeChannel(channel: NativeChannel): void;
