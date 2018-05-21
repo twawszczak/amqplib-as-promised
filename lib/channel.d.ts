@@ -1,6 +1,7 @@
 /// <reference types="node" />
 import { Channel as NativeChannel, Connection, Message, Options, Replies } from 'amqplib';
 import { EventEmitter } from 'events';
+import { AckCache } from './ack-cache';
 export declare type MessageHandler = (message: Message | null) => any;
 export declare class Channel extends EventEmitter {
     protected connection: Connection;
@@ -11,17 +12,13 @@ export declare class Channel extends EventEmitter {
         resolve: () => void;
         reject: (error: any) => void;
     }>;
-    protected consumerHandlers: {
-        [tag: string]: {
-            queue: string;
-            handler: MessageHandler;
-            options?: Options.Consume;
-        };
-    };
+    protected ackCache: AckCache;
+    private consumerHandlers;
     private prefetchCache?;
     private reconnectPromise?;
     private closingByClient;
     constructor(channel: NativeChannel, connection: Connection);
+    protected static extractDeliveryTagFromMessage(message: Message): number;
     consume(queueName: string, handler: MessageHandler, options?: Options.Consume): Promise<Replies.Consume>;
     cancel(consumerTag: string): Promise<Replies.Empty>;
     checkQueue(queueName: string): Promise<Replies.AssertQueue>;

@@ -1,5 +1,6 @@
 import { Channel as NativeChannel, Connection, Message, Options, Replies } from 'amqplib'
 import { EventEmitter } from 'events'
+import { AckCache } from './ack-cache'
 
 export type MessageHandler = (message: Message | null) => any
 
@@ -8,7 +9,8 @@ export class Channel extends EventEmitter {
   protected channel?: NativeChannel
   protected processing: boolean = false
   protected suspended: Array<{ resolve: () => void, reject: (error: any) => void }> = []
-  protected consumerHandlers: { [tag: string]: { queue: string, handler: MessageHandler, options?: Options.Consume } } = {}
+  protected ackCache: AckCache = new AckCache()
+  private consumerHandlers: { [tag: string]: { queue: string, handler: MessageHandler, options?: Options.Consume } } = {}
   private prefetchCache?: { count: number, global?: boolean }
   private reconnectPromise?: Promise<void>
   private closingByClient: boolean = false
@@ -18,12 +20,38 @@ export class Channel extends EventEmitter {
     this.bindNativeChannel(channel)
   }
 
+  protected static extractDeliveryTagFromMessage (message: Message): number {
+    return message.fields.deliveryTag
+  }
+
   async consume (queueName: string, handler: MessageHandler, options?: Options.Consume): Promise<Replies.Consume> {
     return this.nativeOperation(async (channel) => {
-      const response = await channel.consume(queueName, handler, options)
+      const wrappedHandler = async (message: Message | null) => {
+        if (message && this.channel) {
+          const deliveryTag = Channel.extractDeliveryTagFromMessage(message)
+          const cachedOperation = this.ackCache.consumed(queueName, deliveryTag)
+
+          try {
+            if (cachedOperation) {
+              if (cachedOperation === AckCache.NO_ACK) {
+                this.channel.nack(message)
+              } else if (cachedOperation === AckCache.ACK) {
+                this.channel.ack(message)
+              }
+
+              return undefined
+            }
+          } catch (e) {
+            this.emit('error', new Error('Amqp channel wrapper - cached ack/nack failed with message: ' + e.message))
+          }
+        }
+
+        return handler(message)
+      }
+      const response = await channel.consume(queueName, wrappedHandler, options)
       this.consumerHandlers[response.consumerTag] = {
         queue: queueName,
-        handler,
+        handler: wrappedHandler,
         options
       }
 
@@ -157,7 +185,14 @@ export class Channel extends EventEmitter {
       throw new Error('Cannot execute method ack() - channel wrapper not initialized.')
     }
 
-    return this.channel.ack(message, allUpTo)
+    try {
+      if (this.ackCache.ack(message.fields.routingKey, Channel.extractDeliveryTagFromMessage(message))) {
+        this.channel.ack(message, allUpTo)
+      }
+
+    } catch (e) {
+      this.emit('error', e)
+    }
   }
 
   nack (message: Message, allUpTo?: boolean, requeue?: boolean): void {
@@ -165,7 +200,14 @@ export class Channel extends EventEmitter {
       throw new Error('Cannot execute method nack() - channel wrapper not initialized.')
     }
 
-    return this.channel.nack(message, allUpTo, requeue)
+    try {
+      if (this.ackCache.nack(message.fields.routingKey, Channel.extractDeliveryTagFromMessage(message))) {
+        return this.channel.nack(message, allUpTo, requeue)
+      }
+
+    } catch (e) {
+      this.emit('error', e)
+    }
   }
 
   async close (): Promise<void> {
@@ -257,6 +299,12 @@ export class Channel extends EventEmitter {
 
     channel.once('close', async () => {
       try {
+        try {
+          this.ackCache.abandon()
+        } catch (e) {
+          this.emit('error', e)
+        }
+
         if (!this.closingByClient) {
           this.reconnectPromise = this.reconnect(this.error)
           await this.reconnectPromise
