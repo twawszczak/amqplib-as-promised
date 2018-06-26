@@ -50,8 +50,8 @@ let consumerTag: string
 let counter: number
 let reconnects: number
 
-Feature('Handling close in meantime', async () => {
-  Scenario('basic scenario', async () => {
+Feature('Using prefetch channel option', async () => {
+  Scenario('basic prefetch', async () => {
     Given('test queue name', () => {
       queueName = 'handling-closing'
     })
@@ -67,8 +67,6 @@ Feature('Handling close in meantime', async () => {
 
     And('channel', async () => {
       channel = await connection.createChannel()
-
-      channel.on('error', () => { /**/ })
     })
 
     And('channel reconnect handler', () => {
@@ -113,11 +111,11 @@ Feature('Handling close in meantime', async () => {
     })
 
     Then('message received expected times', () => {
-      counter.should.equal(2)
+      counter.should.equal(3)
     })
 
     And('reconnected expected times', () => {
-      reconnects.should.equal(1)
+      reconnects.should.equal(2)
     })
 
     After(async () => {
