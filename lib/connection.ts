@@ -1,13 +1,23 @@
 import amqplib from 'amqplib'
+import { EventEmitter } from 'events'
+
 import { Channel } from './channel'
 
-export class Connection {
+export class Connection extends EventEmitter {
   protected connection?: amqplib.Connection
 
-  constructor (protected url: string, protected options?: amqplib.Options.Connect) {}
+  constructor (protected url: string, protected options?: amqplib.Options.Connect) {
+    super()
+  }
 
   async init (): Promise<void> {
     this.connection = await amqplib.connect(this.url, this.options)
+
+    this.connection.once('close', () => {
+      this.emit('close')
+
+      delete this.connection
+    })
   }
 
   async createChannel (): Promise<Channel> {

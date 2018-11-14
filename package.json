@@ -1,6 +1,6 @@
 {
   "name": "amqplib-as-promised",
-  "version": "3.12.0",
+  "version": "3.13.0",
   "description": "Amqlib wrapper for support publishing new messages as promised",
   "repository": {
     "type": "git",
