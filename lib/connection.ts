@@ -18,6 +18,8 @@ export class Connection extends EventEmitter {
 
       delete this.connection
     })
+
+    this.connection.on('error', (e) => this.emit('error', e))
   }
 
   async createChannel (): Promise<Channel> {

@@ -18,6 +18,7 @@ export declare class Channel extends EventEmitter {
             options?: Options.Consume;
         };
     };
+    protected connectionFinallyClosed: boolean;
     private prefetchCache?;
     private reconnectPromise?;
     private closingByClient;
@@ -46,5 +47,6 @@ export declare class Channel extends EventEmitter {
     protected bindConsumersAfterReconnect(): Promise<void>;
     protected processUnprocessed(): void;
     protected bindNativeChannel(channel: NativeChannel): void;
+    protected bindNativeConnection(): void;
     protected checkPrefetchCache(): Promise<void>;
 }
