@@ -38,7 +38,7 @@ const fakeMessage: Message = {
     redelivered: false,
     exchange: '',
     routingKey: '',
-    messageCount: '123'
+    messageCount: 123
   }
 }
 

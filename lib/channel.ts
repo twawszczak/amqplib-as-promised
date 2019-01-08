@@ -257,11 +257,7 @@ export class Channel extends EventEmitter {
   }
 
   protected bindNativeChannel (channel: NativeChannel): void {
-    channel.once('error', (error) => {
-      this.error = error
-    })
-
-    channel.once('close', async () => {
+    const onClose = async () => {
       try {
         if (!this.closingByClient) {
           this.reconnectPromise = this.reconnect(this.error)
@@ -270,7 +266,14 @@ export class Channel extends EventEmitter {
       } catch (e) {
         this.emit('error', new Error('Cannot reconnect amqp channel with message: ' + e.message))
       }
-    })
+    }
+
+    const onError = (err: Error) => {
+      this.error = err
+    }
+
+    channel.once('close', onClose)
+    channel.once('error', onError)
 
     this.channel = channel
   }
