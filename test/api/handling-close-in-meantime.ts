@@ -1,5 +1,5 @@
-import { Channel } from '../../lib/channel'
-import { Connection } from '../../lib/connection'
+import { Channel } from '../../src/channel'
+import { Connection } from '../../src/connection'
 
 import { Message } from 'amqplib'
 

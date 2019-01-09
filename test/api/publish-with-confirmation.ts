@@ -2,8 +2,8 @@ import { And, Feature, Given, Scenario, Then } from '../init'
 
 import Chance from 'chance'
 
-import { Channel } from '../../lib/channel'
-import { Connection } from '../../lib/connection'
+import { Channel } from '../../src/channel'
+import { Connection } from '../../src/connection'
 
 const chance = new Chance()
 
