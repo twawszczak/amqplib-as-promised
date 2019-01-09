@@ -4,7 +4,7 @@ import { EventEmitter } from 'events';
 import { Channel } from './channel';
 export declare class Connection extends EventEmitter {
     protected url: string;
-    protected options: amqplib.Options.Connect | undefined;
+    protected options?: amqplib.Options.Connect | undefined;
     protected connection?: amqplib.Connection;
     constructor(url: string, options?: amqplib.Options.Connect | undefined);
     init(): Promise<void>;
