@@ -44,7 +44,7 @@ await channel.close()
 await connection.close()
 ```
 
-For proper typing with TypeScript, *@types/amqplib* in `denDependencies` is needed. (compatible versions: 0.5.4 < 1)
+For proper typing with TypeScript, *@types/amqplib* in `devDependencies` is needed. (compatible versions: 0.5.4 < 1)
 
 ## API
 
