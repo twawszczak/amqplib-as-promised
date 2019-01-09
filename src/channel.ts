@@ -1,5 +1,7 @@
-import { Channel as NativeChannel, Connection, Message, Options, Replies } from 'amqplib'
+import { Channel as NativeChannel, Message, Options, Replies } from 'amqplib'
 import { EventEmitter } from 'events'
+
+import { Connection } from './connection'
 
 export type MessageHandler = (message: Message | null) => any
 
@@ -9,7 +11,6 @@ export class Channel extends EventEmitter {
   protected processing: boolean = false
   protected suspended: Array<{ resolve: () => void, reject: (error: any) => void }> = []
   protected consumerHandlers: { [tag: string]: { queue: string, handler: MessageHandler, options?: Options.Consume } } = {}
-  protected connectionFinallyClosed: boolean = false
   private prefetchCache?: { count: number, global?: boolean }
   private reconnectPromise?: Promise<void>
   private closingByClient: boolean = false
@@ -17,7 +18,6 @@ export class Channel extends EventEmitter {
   constructor (channel: NativeChannel, protected connection: Connection) {
     super()
     this.bindNativeChannel(channel)
-    this.bindNativeConnection()
   }
 
   async consume (queueName: string, handler: MessageHandler, options?: Options.Consume): Promise<Replies.Consume> {
@@ -220,12 +220,12 @@ export class Channel extends EventEmitter {
   }
 
   protected async reconnect (reason?: any): Promise<void> {
-    if (this.connectionFinallyClosed) {
+    if (this.connection.finallyClosed) {
       return
     }
 
     this.emit('reconnect', reason)
-    const nativeChannel = await this.connection.createChannel()
+    const nativeChannel = await this.connection.createNativeChannel()
     this.bindNativeChannel(nativeChannel)
     await this.checkPrefetchCache()
 
@@ -258,6 +258,7 @@ export class Channel extends EventEmitter {
 
   protected bindNativeChannel (channel: NativeChannel): void {
     const onClose = async () => {
+      channel.removeListener('error', onError)
       try {
         if (!this.closingByClient) {
           this.reconnectPromise = this.reconnect(this.error)
@@ -276,10 +277,6 @@ export class Channel extends EventEmitter {
     channel.once('error', onError)
 
     this.channel = channel
-  }
-
-  protected bindNativeConnection (): void {
-    this.connection.once('close', () => this.connectionFinallyClosed = true)
   }
 
   protected async checkPrefetchCache (): Promise<void> {

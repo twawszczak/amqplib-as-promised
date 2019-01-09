@@ -4,6 +4,8 @@ import { EventEmitter } from 'events'
 import { Channel } from './channel'
 
 export class Connection extends EventEmitter {
+  finallyClosed: boolean = false
+
   protected connection?: amqplib.Connection
 
   constructor (protected url: string, protected options?: amqplib.Options.Connect) {
@@ -14,20 +16,27 @@ export class Connection extends EventEmitter {
     this.connection = await amqplib.connect(this.url, this.options)
 
     this.connection.once('close', () => {
+      this.finallyClosed = true
       this.emit('close')
-
       delete this.connection
     })
 
     this.connection.on('error', (e) => this.emit('error', e))
   }
 
+  async createNativeChannel (): Promise<amqplib.Channel> {
+    if (!this.connection) {
+      throw new Error('Cannot create channel - connection wrapper is not initialized.')
+    }
+    return this.connection.createChannel()
+  }
+
   async createChannel (): Promise<Channel> {
     if (!this.connection) {
       throw new Error('Cannot create channel - connection wrapper is not initialized.')
     }
-    const nativeChannel = await this.connection.createChannel()
-    return new Channel(nativeChannel, this.connection)
+    const nativeChannel = await this.createNativeChannel()
+    return new Channel(nativeChannel, this)
   }
 
   async close (): Promise<void> {
