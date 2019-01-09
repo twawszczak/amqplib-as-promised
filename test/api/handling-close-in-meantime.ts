@@ -91,7 +91,7 @@ Feature('Using prefetch channel option', async () => {
             await channel.checkQueue(queueName + 'zawawaz')
           } catch (e) { /**/ }
         } else if (counter === 2) {
-          await channel.ack(fakeMessage)
+          channel.ack(fakeMessage)
         } else if (counter === 3) {
           if (m) {
             channel.ack(m)

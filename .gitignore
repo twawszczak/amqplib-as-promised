@@ -1,10 +1,25 @@
-/node_modules
+*-ts.js
 
-/*.log
-/*.tgz
+*.gz
+*.tgz
 
-/yarn.lock
+ts-node-*
+
+/lib/
+/test/mocha.opts
+
+/coverage/
+/node_modules/
+/out/
+
+/.nyc_output/
+
+/.tags
+/.tern-project
+
 /package-lock.json
+/yarn.lock
+/yarn-error.log
 
 /.idea
 /.vscode

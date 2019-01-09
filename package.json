@@ -8,14 +8,15 @@
   },
   "author": "Tadeusz Wawszczak <tadeusz.wawszczak@onet.eu>",
   "license": "MIT",
-  "main": "index.js",
-  "types": "index.d.js",
+  "main": "lib/index.js",
+  "types": "lib/index.d.js",
   "bugs": {
     "url": "https://github.com/twawszczak/amqplib-as-promised/issues"
   },
   "homepage": "https://github.com/twawszczak/amqplib-as-promised#readme",
   "dependencies": {
-    "amqplib": "^0.5.3"
+    "amqplib": "^0.5.3",
+    "tslib": "^1.9.3"
   },
   "peerDependencies": {
     "@types/amqplib": ">= 0.5.4 < 1"
@@ -31,31 +32,33 @@
     "chai-as-promised": "^7.1.1",
     "chai-string": "^1.5.0",
     "chance": "^1.0.18",
+    "coveralls": "^3.0.2",
+    "markdownlint-cli": "^0.13.0",
     "mocha": "^5.2.0",
-    "ts-mocha": "^2.0.0",
+    "nyc": "^13.1.0",
+    "rimraf": "^2.6.3",
     "ts-node": "^7.0.1",
     "tslint": "^5.12.0",
     "tslint-config-standard": "^8.0.1",
     "typescript": "^3.2.2"
   },
   "scripts": {
-    "build": "tsc",
-    "prepublishOnly": "tsc",
-    "pretest": "tsc --noEmit --pretty && tslint -t stylish -p .",
-    "test": "ts-mocha test/api/**/*.ts --timeout 30000",
-    "tsc": "tsc",
-    "ts-mocha": "ts-mocha --timeout 30000",
-    "ts-node": "ts-node"
+    "build": "tsc --pretty",
+    "clean": "rimraf lib",
+    "prepublishOnly": "npm run build",
+    "pretest": "npm run build && tsc --pretty -p test && tslint -t stylish -p . && tslint -t stylish -p test && markdownlint \"*.md\"",
+    "test": "npm run test:spec",
+    "test:spec": "npm run ts-mocha -- \"test/**/*.ts\"",
+    "test:coverage": "nyc --reporter json npm run test:spec && nyc report",
+    "ts-mocha": "mocha --use_strict --throw-deprecation --require source-map-support/register --require ts-node/register --timeout 90000"
   },
-  "standard": {
-    "globals": [
-      "After",
-      "And",
-      "Feature",
-      "Given",
-      "Scenario",
-      "Then",
-      "When"
+  "nyc": {
+    "extension": [
+      ".ts"
+    ],
+    "exclude": [
+      ".*.js",
+      "**/*.d.ts"
     ]
   }
 }

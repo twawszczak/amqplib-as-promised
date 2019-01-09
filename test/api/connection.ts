@@ -49,7 +49,7 @@ Feature('Use Connection object', async () => {
       consumerTag = (await channel.consume(queueName, async (message: Message | null) => {
         if (message) {
           receivedMessage = message.content.toString()
-          await channel.ack(message)
+          channel.ack(message)
         }
       })).consumerTag
     })

@@ -1,10 +1,16 @@
 # amqplib-as-promised
 
-This module wrapping [amqplib node.js library](http://www.squaremobius.net/amqp.node/channel_api.html)
-to provide classic `Promise` interface. (instead of original implementation using Bluebird promises)
-Also, AMQP protocol closing channel when any error occurs. (even in case of using `checkQueue` method,
-error is emitted and channel is closed, when queue does not exist) That library wrapper automatically
-reconnects channel and returning error as a Promise `reject` response.
+<!-- markdownlint-disable MD013 -->
+[![Build Status](https://secure.travis-ci.org/twawszczak/amqplib-as-promised.svg)](http://travis-ci.org/twawszczak/amqplib-as-promised) [![npm](https://img.shields.io/npm/v/amqplib-as-promised.svg)](https://www.npmjs.com/package/amqplib-as-promised)
+<!-- markdownlint-enable MD013 -->
+
+This module wrapping [amqplib node.js
+library](http://www.squaremobius.net/amqp.node/channel_api.html) to provide
+classic `Promise` interface (instead of original implementation using Bluebird
+promises). Also, AMQP protocol closing channel when any error occurs. (even in
+case of using `checkQueue` method, error is emitted and channel is closed, when
+queue does not exist). That library wrapper automatically reconnects channel and
+returning error as a Promise `reject` response.
 
 ## Requirements
 
@@ -44,9 +50,12 @@ await channel.close()
 await connection.close()
 ```
 
-For proper typing with TypeScript, *@types/amqplib* in `devDependencies` is needed. (compatible versions: 0.5.4 < 1)
+For proper typing with TypeScript, *@types/amqplib* in `devDependencies` is
+needed. (compatible versions: 0.5.4 < 1)
 
 ## API
+
+<!-- markdownlint-disable MD013 -->
 
 ### Connection
 
@@ -82,7 +91,11 @@ For proper typing with TypeScript, *@types/amqplib* in `devDependencies` is need
 | nack | **message**: amqplib.Message **allUpTo**?: boolean **requeue**?: boolean | void |  |
 | close | - | Promise\<void> |  |
 
+<!-- markdownlint-enable MD013 -->
+
 ## License
+
+Copyright (c) 2019 Piotr Roszatycki <piotr.roszatycki@gmail.com>
 
 Copyright (c) 2017-2018 Tadeusz Wawszczak
 

@@ -1,5 +1,5 @@
-import { Channel } from './lib/channel'
-import { Connection } from './lib/connection'
+import { Channel } from './channel'
+import { Connection } from './connection'
 
 export {
   Connection,
