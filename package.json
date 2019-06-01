@@ -1,6 +1,6 @@
 {
   "name": "amqplib-as-promised",
-  "version": "3.15.1",
+  "version": "3.15.2",
   "description": "Amqlib wrapper for support publishing new messages as promised",
   "repository": {
     "type": "git",
@@ -17,9 +17,6 @@
   "dependencies": {
     "amqplib": "^0.5.3",
     "tslib": "^1.9.3"
-  },
-  "peerDependencies": {
-    "@types/amqplib": ">= 0.5.4 < 1"
   },
   "devDependencies": {
     "@types/amqplib": "^0.5.9",
