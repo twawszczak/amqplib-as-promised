@@ -42,7 +42,7 @@
   "scripts": {
     "build": "tsc --pretty",
     "clean": "rimraf lib",
-    "prepublishOnly": "npm run build",
+    "prepack": "npm run build",
     "postpublish": "git tag v$npm_package_version -a -m \"Release v$npm_package_version\" && git push --tags",
     "pretest": "npm run build && tsc --pretty -p test && tslint -t stylish -p . && tslint -t stylish -p test && markdownlint \"*.md\"",
     "test": "npm run test:spec",
