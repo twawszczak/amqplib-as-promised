@@ -3,7 +3,7 @@ import { Connection } from '../../src/connection'
 
 import { Message } from 'amqplib'
 
-import { After, And, Feature, Given, Scenario, Then, When } from '../init'
+import { After, And, Feature, Given, Scenario, Then, When } from '../steps'
 
 const AMQP_URL = process.env.AMQP_URL || 'amqp://localhost'
 

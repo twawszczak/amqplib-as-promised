@@ -1,4 +1,4 @@
-import { And, Feature, Given, Scenario, Then } from '../init'
+import { And, Feature, Given, Scenario, Then } from '../steps'
 
 import Chance from 'chance'
 
