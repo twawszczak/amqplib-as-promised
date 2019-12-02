@@ -18,9 +18,7 @@ const fakeMessage: Message = {
   properties: {
     contentType: 'text',
     contentEncoding: 'utf8',
-    headers: {
-
-    },
+    headers: {},
     deliveryMode: 1,
     priority: 2,
     correlationId: 1,
@@ -31,15 +29,15 @@ const fakeMessage: Message = {
     type: 0,
     userId: 0,
     appId: 0,
-    clusterId: 0
+    clusterId: 0,
   },
   fields: {
     deliveryTag: 1231231231,
     redelivered: false,
     exchange: '',
     routingKey: '',
-    messageCount: 123
-  }
+    messageCount: 123,
+  },
 }
 
 let queueName: string
@@ -83,21 +81,25 @@ Feature('Using prefetch channel option', async () => {
     And('create consumer', async () => {
       counter = 0
 
-      consumerTag = (await channel.consume(queueName, async (m: Message | null) => {
-        counter++
+      consumerTag = (
+        await channel.consume(queueName, async (m: Message | null) => {
+          counter++
 
-        if (counter === 1) {
-          try {
-            await channel.checkQueue(queueName + 'zawawaz')
-          } catch (e) { /**/ }
-        } else if (counter === 2) {
-          channel.ack(fakeMessage)
-        } else if (counter === 3) {
-          if (m) {
-            channel.ack(m)
+          if (counter === 1) {
+            try {
+              await channel.checkQueue(queueName + 'zawawaz')
+            } catch (e) {
+              /**/
+            }
+          } else if (counter === 2) {
+            channel.ack(fakeMessage)
+          } else if (counter === 3) {
+            if (m) {
+              channel.ack(m)
+            }
           }
-        }
-      })).consumerTag
+        })
+      ).consumerTag
     })
 
     And('send message', async () => {

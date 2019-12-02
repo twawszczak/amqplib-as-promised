@@ -2,16 +2,16 @@ import { And, Feature, Given, Scenario, Then } from '../steps'
 
 import Chance from 'chance'
 
-import { ConfirmChannel } from '../../src/confirm-channel'
+import { Channel } from '../../src/channel'
 import { Connection } from '../../src/connection'
 
 const chance = new Chance()
 
 const AMQP_URL = process.env.AMQP_URL || 'amqp://localhost'
 
-Feature('Amqplib send to queue async and confirm', () => {
+Feature('Amqplib send to queue async', () => {
   let connection: Connection
-  let confirmChannel: ConfirmChannel
+  let channel: Channel
   let queueName: string
   let messageContent: string
   let consumerTag: string
@@ -30,47 +30,43 @@ Feature('Amqplib send to queue async and confirm', () => {
     })
 
     And('Channel in connection', async () => {
-      confirmChannel = await connection.createConfirmChannel()
+      channel = await connection.createChannel()
     })
 
     And('Create queue', async () => {
-      await confirmChannel.assertQueue(queueName, { durable: true })
+      await channel.assertQueue(queueName, { durable: true })
     })
 
     And('Get close handler', () => {
       closePromise = connection.waitForClose()
     })
 
-    const limit = 1000
+    const limit = 100000
 
     Then(`Send ${limit} messages`, async () => {
       for (let i = 1; i <= limit / 2; i++) {
         await Promise.all([
-          confirmChannel.sendToQueue(queueName, Buffer.from(messageContent)),
-          confirmChannel.sendToQueue(queueName, Buffer.from(messageContent)),
+          channel.sendToQueue(queueName, Buffer.from(messageContent)),
+          channel.sendToQueue(queueName, Buffer.from(messageContent)),
         ])
       }
-    })
-
-    Then('Wait for confirms', async () => {
-      await confirmChannel.waitForConfirms()
     })
 
     Then('Get message', async () => {
       await new Promise(async (resolve) => {
         let counter = 0
 
-        await confirmChannel.consume(
+        await channel.consume(
           queueName,
           async (message) => {
             if (message) {
               message.content.toString().should.equal(messageContent, 'Invalid consumed message content')
-              confirmChannel.ack(message)
+              channel.ack(message)
               counter++
             }
 
             if (counter === limit) {
-              await confirmChannel.cancel(consumerTag)
+              await channel.cancel(consumerTag)
               resolve()
             }
           },
@@ -82,11 +78,11 @@ Feature('Amqplib send to queue async and confirm', () => {
     })
 
     Then('Remove queue', async () => {
-      await confirmChannel.deleteQueue(queueName)
+      await channel.deleteQueue(queueName)
     })
 
     And('Close channel', async () => {
-      await confirmChannel.close()
+      await channel.close()
     })
 
     And('Finally disconnect', async () => {

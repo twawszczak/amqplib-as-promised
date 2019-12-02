@@ -9,31 +9,33 @@ export class Channel extends EventEmitter {
   protected error: any
   protected channel?: NativeChannel
   protected processing: boolean = false
-  protected suspended: Array<{ resolve: () => void, reject: (error: any) => void }> = []
-  protected consumerHandlers: { [tag: string]: { queue: string, handler: MessageHandler, options?: Options.Consume } } = {}
-  private prefetchCache?: { count: number, global?: boolean }
+  protected suspended: Array<{ resolve: () => void; reject: (error: any) => void }> = []
+  protected consumerHandlers: {
+    [tag: string]: { queue: string; handler: MessageHandler; options?: Options.Consume }
+  } = {}
+  private prefetchCache?: { count: number; global?: boolean }
   private reconnectPromise?: Promise<void>
   private closingByClient: boolean = false
 
-  constructor (channel: NativeChannel, protected connection: Connection) {
+  constructor(channel: NativeChannel, protected connection: Connection) {
     super()
     this.bindNativeChannel(channel)
   }
 
-  async consume (queueName: string, handler: MessageHandler, options?: Options.Consume): Promise<Replies.Consume> {
+  async consume(queueName: string, handler: MessageHandler, options?: Options.Consume): Promise<Replies.Consume> {
     return this.nativeOperation(async (channel) => {
       const response = await channel.consume(queueName, handler, options)
       this.consumerHandlers[response.consumerTag] = {
         queue: queueName,
         handler,
-        options
+        options,
       }
 
       return response
     })
   }
 
-  async cancel (consumerTag: string): Promise<Replies.Empty> {
+  async cancel(consumerTag: string): Promise<Replies.Empty> {
     return this.nativeOperation(async (channel) => {
       const result = await channel.cancel(consumerTag)
       delete this.consumerHandlers[consumerTag]
@@ -42,47 +44,47 @@ export class Channel extends EventEmitter {
     })
   }
 
-  async checkQueue (queueName: string): Promise<Replies.AssertQueue> {
+  async checkQueue(queueName: string): Promise<Replies.AssertQueue> {
     return this.nativeOperation((channel) => {
       return Promise.resolve(channel.checkQueue(queueName))
     })
   }
 
-  async assertQueue (queueName: string, options?: Options.AssertQueue): Promise<Replies.AssertQueue> {
+  async assertQueue(queueName: string, options?: Options.AssertQueue): Promise<Replies.AssertQueue> {
     return this.nativeOperation((channel) => {
       return Promise.resolve(channel.assertQueue(queueName, options))
     })
   }
 
-  async deleteQueue (queueName: string, options?: Options.DeleteQueue): Promise<Replies.DeleteQueue> {
+  async deleteQueue(queueName: string, options?: Options.DeleteQueue): Promise<Replies.DeleteQueue> {
     return this.nativeOperation((channel) => {
       return Promise.resolve(channel.deleteQueue(queueName, options))
     })
   }
 
-  async sendToQueue (queueName: string, content: Buffer, options?: Options.Publish): Promise<boolean> {
+  async sendToQueue(queueName: string, content: Buffer, options?: Options.Publish): Promise<unknown> {
     return this.publish('', queueName, content, options)
   }
 
-  async bindQueue (queueName: string, source: string, pattern: string, args?: any): Promise<Replies.Empty> {
+  async bindQueue(queueName: string, source: string, pattern: string, args?: any): Promise<Replies.Empty> {
     return this.nativeOperation((channel) => {
       return Promise.resolve(channel.bindQueue(queueName, source, pattern, args))
     })
   }
 
-  async unbindQueue (queueName: string, source: string, pattern: string, args?: any): Promise<Replies.Empty> {
+  async unbindQueue(queueName: string, source: string, pattern: string, args?: any): Promise<Replies.Empty> {
     return this.nativeOperation((channel) => {
       return Promise.resolve(channel.unbindQueue(queueName, source, pattern, args))
     })
   }
 
-  async publish (exchange: string, queue: string, content: Buffer, options?: Options.Publish): Promise<boolean> {
+  async publish(exchange: string, queue: string, content: Buffer, options?: Options.Publish): Promise<unknown> {
     const EVENT_DRAIN = 'drain'
     const EVENT_ERROR = 'error'
     const EVENT_CLOSE = 'close'
 
     return this.nativeOperation((channel) => {
-      return new Promise<boolean>((resolve, reject) => {
+      return new Promise<void>((resolve, reject) => {
         let canSend = false
         try {
           canSend = channel.publish(exchange, queue, content, options)
@@ -91,19 +93,19 @@ export class Channel extends EventEmitter {
         }
 
         if (canSend) {
-          resolve(true)
+          resolve()
         } else {
           const eventHandlers: { [key: string]: (...args: any[]) => void } = {}
 
           const eventHandlerWrapper = (specificEventName: string) => {
             eventHandlers[specificEventName] = (handlerArg) => {
-              [EVENT_DRAIN, EVENT_CLOSE, EVENT_ERROR].forEach((eventName) => {
+              ;[EVENT_DRAIN, EVENT_CLOSE, EVENT_ERROR].forEach((eventName) => {
                 if (eventName !== specificEventName) {
                   channel.removeListener(eventName, eventHandlers[eventName])
                 }
               })
 
-              specificEventName === EVENT_DRAIN ? resolve(true) : reject(String(handlerArg))
+              specificEventName === EVENT_DRAIN ? resolve() : reject(String(handlerArg))
             }
 
             return eventHandlers[specificEventName]
@@ -117,44 +119,48 @@ export class Channel extends EventEmitter {
     })
   }
 
-  async prefetch (count: number, global?: boolean): Promise<Replies.Empty> {
+  async prefetch(count: number, global?: boolean): Promise<Replies.Empty> {
     this.prefetchCache = { count, global }
     return this.nativeOperation((channel) => {
       return Promise.resolve(channel.prefetch(count, global))
     })
   }
 
-  async assertExchange (exchangeName: string, exchangeType: string, options?: Options.AssertExchange): Promise<Replies.AssertExchange> {
+  async assertExchange(
+    exchangeName: string,
+    exchangeType: string,
+    options?: Options.AssertExchange,
+  ): Promise<Replies.AssertExchange> {
     return this.nativeOperation((channel) => {
       return Promise.resolve(channel.assertExchange(exchangeName, exchangeType, options))
     })
   }
 
-  async checkExchange (exchangeName: string): Promise<Replies.Empty> {
+  async checkExchange(exchangeName: string): Promise<Replies.Empty> {
     return this.nativeOperation((channel) => {
       return Promise.resolve(channel.checkExchange(exchangeName))
     })
   }
 
-  async deleteExchange (exchangeName: string, options?: Options.DeleteExchange): Promise<Replies.Empty> {
+  async deleteExchange(exchangeName: string, options?: Options.DeleteExchange): Promise<Replies.Empty> {
     return this.nativeOperation((channel) => {
       return Promise.resolve(channel.deleteExchange(exchangeName, options))
     })
   }
 
-  async bindExchange (destination: string, source: string, pattern: string, args?: any): Promise<Replies.Empty> {
+  async bindExchange(destination: string, source: string, pattern: string, args?: any): Promise<Replies.Empty> {
     return this.nativeOperation((channel) => {
       return Promise.resolve(channel.bindExchange(destination, source, pattern, args))
     })
   }
 
-  async unbindExchange (destination: string, source: string, pattern: string, args?: any): Promise<Replies.Empty> {
+  async unbindExchange(destination: string, source: string, pattern: string, args?: any): Promise<Replies.Empty> {
     return this.nativeOperation((channel) => {
       return Promise.resolve(channel.unbindExchange(destination, source, pattern, args))
     })
   }
 
-  ack (message: Message, allUpTo?: boolean): void {
+  ack(message: Message, allUpTo?: boolean): void {
     if (!this.channel) {
       throw new Error('Cannot execute method ack() - channel wrapper not initialized.')
     }
@@ -162,7 +168,7 @@ export class Channel extends EventEmitter {
     return this.channel.ack(message, allUpTo)
   }
 
-  nack (message: Message, allUpTo?: boolean, requeue?: boolean): void {
+  nack(message: Message, allUpTo?: boolean, requeue?: boolean): void {
     if (!this.channel) {
       throw new Error('Cannot execute method nack() - channel wrapper not initialized.')
     }
@@ -170,7 +176,7 @@ export class Channel extends EventEmitter {
     return this.channel.nack(message, allUpTo, requeue)
   }
 
-  async close (): Promise<void> {
+  async close(): Promise<void> {
     return this.nativeOperation(async (channel) => {
       this.closingByClient = true
       try {
@@ -181,13 +187,13 @@ export class Channel extends EventEmitter {
     })
   }
 
-  async get (queueName: string, options?: Options.Get): Promise<Message | false> {
+  async get(queueName: string, options?: Options.Get): Promise<Message | false> {
     return this.nativeOperation((channel) => {
       return Promise.resolve(channel.get(queueName, options)) as Promise<Message | false>
     })
   }
 
-  protected async nativeOperation<T> (operation: (channel: NativeChannel) => Promise<T>): Promise<T> {
+  protected async nativeOperation<T>(operation: (channel: NativeChannel) => Promise<T>): Promise<T> {
     if (this.reconnectPromise) {
       await this.reconnectPromise
     }
@@ -196,7 +202,7 @@ export class Channel extends EventEmitter {
       await new Promise((resolve, reject) => {
         this.suspended.push({
           resolve,
-          reject
+          reject,
         })
       })
     }
@@ -219,7 +225,7 @@ export class Channel extends EventEmitter {
     })
   }
 
-  protected async reconnect (reason?: any): Promise<void> {
+  protected async reconnect(reason?: any): Promise<void> {
     if (this.connection.finallyClosed) {
       return
     }
@@ -232,7 +238,7 @@ export class Channel extends EventEmitter {
     await this.bindConsumersAfterReconnect()
   }
 
-  protected async bindConsumersAfterReconnect (): Promise<void> {
+  protected async bindConsumersAfterReconnect(): Promise<void> {
     if (!this.channel) {
       throw new Error('Cannot bind consumers after reconnect - channel not exists.')
     }
@@ -243,12 +249,12 @@ export class Channel extends EventEmitter {
       await this.channel.consume(
         consumer.queue,
         consumer.handler,
-        consumer.options ? { ...consumer.options, ...tagOption } : tagOption
+        consumer.options ? { ...consumer.options, ...tagOption } : tagOption,
       )
     }
   }
 
-  protected processUnprocessed (): void {
+  protected processUnprocessed(): void {
     const unprocessed = this.suspended.shift()
 
     if (unprocessed) {
@@ -256,7 +262,7 @@ export class Channel extends EventEmitter {
     }
   }
 
-  protected bindNativeChannel (channel: NativeChannel): void {
+  protected bindNativeChannel(channel: NativeChannel): void {
     const onClose = async () => {
       channel.removeListener('error', onError)
       try {
@@ -279,7 +285,7 @@ export class Channel extends EventEmitter {
     this.channel = channel
   }
 
-  protected async checkPrefetchCache (): Promise<void> {
+  protected async checkPrefetchCache(): Promise<void> {
     if (this.channel && this.prefetchCache) {
       await this.channel.prefetch(this.prefetchCache.count, this.prefetchCache.global)
     }

@@ -1,6 +1,6 @@
 {
   "name": "amqplib-as-promised",
-  "version": "3.15.3",
+  "version": "4.0.0",
   "description": "Amqlib wrapper for support publishing new messages as promised",
   "repository": {
     "type": "git",
@@ -38,7 +38,7 @@
     "shx": "^0.3.2",
     "ts-node": "^8.4.1",
     "tslint": "^5.20.0",
-    "tslint-config-standard": "^8.0.1",
+    "tslint-config-prettier": "^1.18.0",
     "typescript": "^3.6.4"
   },
   "scripts": {

@@ -1,27 +1,27 @@
 import Mocha from 'mocha'
 import * as MochaSteps from 'mocha-steps'
 
-export function Feature (what: string, how: () => void): Mocha.Suite {
+export function Feature(what: string, how: () => void): Mocha.Suite {
   return Mocha.describe('Feature: ' + what, how)
 }
-export function Scenario (what: string, how: () => void): Mocha.Suite {
+export function Scenario(what: string, how: () => void): Mocha.Suite {
   return Mocha.describe('Scenario: ' + what, how)
 }
-export function Given (what: string, how: (done: Mocha.Done) => void): Mocha.Test {
+export function Given(what: string, how: (done: Mocha.Done) => void): Mocha.Test {
   return MochaSteps.step('Given ' + what, how)
 }
-export function When (what: string, how: (done: Mocha.Done) => void): Mocha.Test {
+export function When(what: string, how: (done: Mocha.Done) => void): Mocha.Test {
   return MochaSteps.step('When ' + what, how)
 }
-export function Then (what: string, how: (done: Mocha.Done) => void): Mocha.Test {
+export function Then(what: string, how: (done: Mocha.Done) => void): Mocha.Test {
   return MochaSteps.step('Then ' + what, how)
 }
-export function And (what: string, how: (done: Mocha.Done) => void): Mocha.Test {
+export function And(what: string, how: (done: Mocha.Done) => void): Mocha.Test {
   return MochaSteps.step('And ' + what, how)
 }
-export function After (callback: (this: Mocha.Context, done: Mocha.Done) => any): void {
+export function After(callback: (this: Mocha.Context, done: Mocha.Done) => any): void {
   Mocha.after(callback)
 }
-export function Before (callback: (this: Mocha.Context, done: Mocha.Done) => any): void {
+export function Before(callback: (this: Mocha.Context, done: Mocha.Done) => any): void {
   Mocha.before(callback)
 }

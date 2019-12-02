@@ -60,11 +60,13 @@ Feature('Using prefetch channel option', async () => {
     })
 
     When('create consumer which not ack', async () => {
-      consumerTag = (await channel.consume(queueName, async (message: Message | null) => {
-        if (message) {
-          receivedMessages.push(message)
-        }
-      })).consumerTag
+      consumerTag = (
+        await channel.consume(queueName, async (message: Message | null) => {
+          if (message) {
+            receivedMessages.push(message)
+          }
+        })
+      ).consumerTag
     })
 
     And('send messages', async () => {
@@ -132,15 +134,19 @@ Feature('Using prefetch channel option', async () => {
     When('check queue which not exists to force internal channel error', async () => {
       try {
         await channel.checkQueue(queueName + '123')
-      } catch (e) {/**/}
+      } catch (e) {
+        /**/
+      }
     })
 
     And('create consumer which not ack', async () => {
-      consumerTag = (await channel.consume(queueName, async (message: Message | null) => {
-        if (message) {
-          receivedMessages.push(message)
-        }
-      })).consumerTag
+      consumerTag = (
+        await channel.consume(queueName, async (message: Message | null) => {
+          if (message) {
+            receivedMessages.push(message)
+          }
+        })
+      ).consumerTag
     })
 
     And('send messages', async () => {
