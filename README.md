@@ -21,7 +21,7 @@ returning error as a Promise `reject` response.
 
 ## Requirements
 
-This module requires Node >= 8.
+This module requires Node >= 10.
 
 ## Installation
 
