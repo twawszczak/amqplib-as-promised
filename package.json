@@ -51,7 +51,7 @@
     "clean:coverage": "shx rm -rf coverage .nyc_output",
     "lint": "npm run compile && tsc --pretty -p test && tslint -t stylish -p . && tslint -t stylish -p test && markdownlint \"*.md\"",
     "postpublish": "node -e \"require(\\\"changelog-parser\\\")(\\\"CHANGELOG.md\\\").then(ch => console.log(ch.versions.filter(v => v.version === \\\"$npm_package_version\\\").map(v => \\\"v$npm_package_version\\n\\n\\\" + v.body).concat(\\\"Release v$npm_package_version\\\")[0]))\" | xargs -0 git tag v$npm_package_version -a -m && git push --tags",
-    "prepack": "npm run compile",
+    "prepare": "npm run compile",
     "prepublishOnly": "npm run test",
     "pretest": "npm run lint",
     "test": "npm run test:spec",
