@@ -1,10 +1,6 @@
 # amqplib-as-promised
 
-<!-- markdownlint-disable MD013 -->
-
-[![Build Status](https://secure.travis-ci.org/twawszczak/amqplib-as-promised.svg)](http://travis-ci.org/twawszczak/amqplib-as-promised) [![npm](https://img.shields.io/npm/v/amqplib-as-promised.svg)](https://www.npmjs.com/package/amqplib-as-promised)
-
-<!-- markdownlint-enable MD013 -->
+[![ci](https://github.com/twawszczak/amqplib-as-promised/actions/workflows/ci.yml/badge.svg)](https://github.com/twawszczak/amqplib-as-promised/actions/workflows/ci.yml) [![npm](https://img.shields.io/npm/v/amqplib-as-promised.svg)](https://www.npmjs.com/package/amqplib-as-promised)
 
 This module wrapping [amqplib node.js
 library](http://www.squaremobius.net/amqp.node/channel_api.html) to provide
@@ -21,7 +17,7 @@ returning error as a Promise `reject` response.
 
 ## Requirements
 
-This module requires Node >= 8.
+This module requires Node >= 12.
 
 ## Installation
 
@@ -58,7 +54,7 @@ await connection.close()
 ```
 
 For proper typing with TypeScript, _@types/amqplib_ in `devDependencies` is
-needed. (compatible versions: 0.5.4 < 1)
+needed. (compatible versions: 0.8.0 < 1)
 
 ## API
 
@@ -111,7 +107,7 @@ needed. (compatible versions: 0.5.4 < 1)
 
 ## License
 
-Copyright (c) 2019 Piotr Roszatycki <piotr.roszatycki@gmail.com>
+Copyright (c) 2019-2022 Piotr Roszatycki <piotr.roszatycki@gmail.com>
 
 Copyright (c) 2017-2018 Tadeusz Wawszczak
 
