@@ -1,0 +1,47 @@
+name: Node.js CI
+
+on:
+  - push
+  - pull_request
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        node-version:
+          - 12.x
+          - 14.x
+        npm-audit:
+          - false
+        npm-run-script:
+          - test:spec
+        include:
+          - node-version: 16.x
+            npm-audit: true
+            npm-run-script: test
+
+    services:
+      rabbitmq:
+        image: rabbitmq:3.8
+        env:
+          RABBITMQ_DEFAULT_USER: guest
+          RABBITMQ_DEFAULT_PASS: guest
+        ports:
+          - 5672:5672
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v3
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      - run: npm install
+
+      - run: if [ "${{ matrix.npm-audit }}" = true ]; then npm audit; fi
+
+      - run: npm run ${{ matrix.npm-run-script }}
