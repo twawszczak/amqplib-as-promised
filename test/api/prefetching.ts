@@ -77,7 +77,7 @@ Feature('Using prefetch channel option', async () => {
     })
 
     And('Wait 3 sec', async () => {
-      await new Promise((resolve) => {
+      await new Promise<void>((resolve) => {
         setTimeout(() => resolve(), 3000)
       })
     })
@@ -157,7 +157,7 @@ Feature('Using prefetch channel option', async () => {
     })
 
     And('Wait 3 sec', async () => {
-      await new Promise((resolve) => {
+      await new Promise<void>((resolve) => {
         setTimeout(() => resolve(), 3000)
       })
     })

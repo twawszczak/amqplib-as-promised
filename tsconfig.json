@@ -1,26 +1,19 @@
 {
+  "extends": "@tsconfig/node14/tsconfig.json",
   "compilerOptions": {
     "declaration": true,
-    "esModuleInterop": true,
     "importHelpers": true,
-    "lib": [
-      "es2017"
-    ],
     "module": "commonjs",
+    "moduleResolution": "node",
     "noImplicitAny": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "outDir": "./lib",
-    "target": "es2017",
-    "sourceMap": true,
-    "strict": true,
-    "typeRoots": [
-      "node_modules/@types"
-    ]
+    "typeRoots": ["node_modules/@types"]
   },
-  "exclude": [
-    "./lib/**/*",
-    "./test/**/*"
-  ]
+  "exclude": ["./lib/**/*", "./test/**/*"],
+  "ts-node": {
+    "transpileOnly": true
+  }
 }

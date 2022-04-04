@@ -53,7 +53,7 @@ Feature('Amqplib send to queue async', () => {
     })
 
     Then('Get message', async () => {
-      await new Promise(async (resolve) => {
+      await new Promise<void>(async (resolve) => {
         let counter = 0
 
         await channel.consume(

@@ -62,7 +62,7 @@ Feature('Use Connection object', async () => {
     })
 
     And('Wait 1 sec', async () => {
-      await new Promise((resolve) => {
+      await new Promise<void>((resolve) => {
         setTimeout(() => resolve(), 1000)
       })
     })
@@ -127,7 +127,7 @@ Feature('Use Connection object', async () => {
     })
 
     And('Wait 1 sec', async () => {
-      await new Promise((resolve) => {
+      await new Promise<void>((resolve) => {
         setTimeout(() => resolve(), 1000)
       })
     })

@@ -199,7 +199,7 @@ export class Channel extends EventEmitter {
     }
 
     if (this.processing) {
-      await new Promise((resolve, reject) => {
+      await new Promise<void>((resolve, reject) => {
         this.suspended.push({
           resolve,
           reject,
@@ -270,7 +270,7 @@ export class Channel extends EventEmitter {
           this.reconnectPromise = this.reconnect(this.error)
           await this.reconnectPromise
         }
-      } catch (e) {
+      } catch (e: any) {
         this.emit('error', new Error('Cannot reconnect amqp channel with message: ' + e.message))
       }
     }

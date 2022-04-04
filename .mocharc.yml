@@ -1,10 +1,12 @@
 color: true
 diff: true
-opts: ./test/mocha.opts
+extension:
+  - ts
+loader: ts-node/register
+no-warnings: true
 package: ./package.json
-require:
-  - ts-node/register
-  - source-map-support/register
-  - mocha-steps
+spec:
+  - test/api/*.ts
 timeout: 90000
+throw-deprecation: true
 ui: bdd
